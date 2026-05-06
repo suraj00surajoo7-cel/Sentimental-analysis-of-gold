@@ -1,0 +1,1568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gold Price Prediction & Sentiment Analysis — India 1947–Present</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:         #F7FAF8;
+    --bg-2:       #EDF5F0;
+    --bg-3:       #E0EDE6;
+    --ink:        #0D1F17;
+    --ink-mid:    #1E3D2C;
+    --ink-light:  #4A7060;
+    --ink-xlight: #8AADA0;
+    --gold:       #1E8A4A;
+    --gold-dark:  #155E33;
+    --gold-pale:  #E6F7ED;
+    --green:      #1E8A4A;
+    --green-dark: #155E33;
+    --green-pale: #E6F7ED;
+    --accent:     #27AE60;
+    --accent-light:#52D68A;
+    --red:        #C23B30;
+    --border:     #C8DDD3;
+    --border-dark:#A8C5B8;
+    --shadow-sm:  0 1px 4px rgba(0,60,30,0.07), 0 2px 10px rgba(0,60,30,0.05);
+    --shadow:     0 2px 8px rgba(0,60,30,0.08), 0 6px 24px rgba(0,60,30,0.07);
+    --radius:     10px;
+    --transition: 0.18s ease;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: var(--ink);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── HEADER ────────────────────────────────── */
+  .header {
+    background: #fff;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--green-dark), var(--accent), var(--accent-light), var(--accent), var(--green-dark));
+  }
+
+  .header-inner {
+    max-width: 1300px; margin: 0 auto; padding: 32px 40px 28px;
+    display: grid; grid-template-columns: 1fr auto;
+    align-items: center; gap: 32px;
+  }
+
+  .logo-mark { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+
+  .gold-icon {
+    width: 30px; height: 30px;
+    background: var(--green-pale);
+    border: 1px solid rgba(30,138,74,0.3);
+    border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; flex-shrink: 0;
+    color: var(--green);
+  }
+
+  .logo-text {
+    font-family: 'JetBrains Mono', monospace; font-size: 8.5px;
+    letter-spacing: 2.5px; color: var(--ink-xlight); text-transform: uppercase;
+  }
+
+  h1.title {
+    font-size: clamp(24px, 3.5vw, 44px); font-weight: 700; color: var(--ink);
+    line-height: 1.1; letter-spacing: -1px;
+  }
+  h1.title span { color: var(--green); }
+
+  .header-sub {
+    font-size: 13px; color: var(--ink-light); margin-top: 8px;
+    line-height: 1.65; max-width: 480px;
+  }
+
+  .header-stats { display: flex; flex-direction: column; gap: 12px; align-items: flex-end; }
+
+  .live-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--green-pale);
+    border: 1px solid rgba(30,138,74,0.25);
+    border-radius: 100px; padding: 4px 12px;
+  }
+
+  .live-dot {
+    width: 6px; height: 6px;
+    background: var(--green); border-radius: 50%;
+    animation: pulse 2.5s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%,100% { box-shadow: 0 0 0 0 rgba(30,138,74,0.5); }
+    50%      { box-shadow: 0 0 0 5px rgba(30,138,74,0); }
+  }
+
+  .live-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px; letter-spacing: 2px; color: var(--green-dark); text-transform: uppercase;
+  }
+
+  .price-panels { display: flex; gap: 20px; align-items: center; }
+
+  .current-price-block { text-align: right; }
+
+  .price-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 7.5px;
+    letter-spacing: 1.5px; color: var(--ink-xlight); text-transform: uppercase; margin-bottom: 4px;
+  }
+
+  .price-value {
+    font-size: 26px; font-weight: 700; color: var(--ink); line-height: 1; letter-spacing: -0.5px;
+  }
+  .price-value.gram { font-size: 20px; color: var(--green); }
+
+  .price-change {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    color: var(--green); margin-top: 4px;
+  }
+
+  .price-divider { width: 1px; height: 44px; background: var(--border); flex-shrink: 0; }
+
+  /* ── NAV ───────────────────────────────────── */
+  nav {
+    background: #fff;
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 100;
+  }
+
+  .nav-inner {
+    max-width: 1300px; margin: 0 auto; padding: 0 40px;
+    display: flex; overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .nav-inner::-webkit-scrollbar { display: none; }
+
+  .nav-tab {
+    padding: 13px 16px;
+    font-family: 'JetBrains Mono', monospace; font-size: 9px;
+    letter-spacing: 1.5px; text-transform: uppercase; color: var(--ink-xlight);
+    cursor: pointer; border-bottom: 2px solid transparent;
+    transition: color var(--transition), border-color var(--transition);
+    white-space: nowrap;
+    background: none; border-top: none; border-left: none; border-right: none;
+  }
+  .nav-tab:hover { color: var(--ink); }
+  .nav-tab.active { color: var(--ink); border-bottom-color: var(--green); }
+  .predict-tab { color: #c0392b !important; font-weight: 600; }
+  .predict-tab.active { border-bottom-color: #c0392b !important; color: #c0392b !important; }
+
+  /* ── PREDICT LAYOUT ────────────────────────── */
+  .predict-wrapper {
+    display: grid;
+    grid-template-columns: 370px 1fr;
+    gap: 28px;
+    align-items: start;
+  }
+  @media(max-width:900px) { .predict-wrapper { grid-template-columns: 1fr; } }
+
+  /* Warm-dark prediction card */
+  .predict-phone-card {
+    background: #0D2B1A;
+    border-radius: 18px;
+    padding: 28px 24px;
+    box-shadow: 0 8px 40px rgba(0,60,20,0.25);
+    position: sticky;
+    top: 70px;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .predict-phone-header {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 8px;
+  }
+  .predict-phone-logo {
+    font-size: 26px;
+    background: rgba(30,138,74,0.15);
+    border: 1px solid rgba(30,138,74,0.3);
+    border-radius: 10px;
+    width: 46px; height: 46px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .predict-phone-title {
+    font-size: 17px; font-weight: 700; color: #fff;
+    line-height: 1.2; letter-spacing: -0.3px;
+  }
+  .predict-phone-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8.5px; letter-spacing: 1.5px;
+    color: rgba(255,255,255,0.35); text-transform: uppercase; margin-top: 2px;
+  }
+  .predict-phone-desc {
+    font-size: 12px; color: rgba(255,255,255,0.45);
+    margin-bottom: 20px; margin-top: 4px;
+    font-family: 'JetBrains Mono', monospace; letter-spacing: 0.2px;
+  }
+  .predict-field-wrap {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+    transition: border-color var(--transition);
+  }
+  .predict-field-wrap:focus-within { border-color: rgba(30,138,74,0.4); }
+  .predict-label {
+    display: block;
+    font-family: 'JetBrains Mono', monospace; font-size: 8.5px;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    color: rgba(255,255,255,0.35); margin-bottom: 8px;
+  }
+  .predict-date-input {
+    width: 100%;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 7px;
+    padding: 10px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 15px; color: #fff; letter-spacing: 1px;
+    outline: none; color-scheme: dark; cursor: pointer;
+    transition: border-color var(--transition);
+  }
+  .predict-date-input:focus { border-color: rgba(30,138,74,0.5); }
+
+  .predict-btn-row {
+    display: grid; grid-template-columns: 1fr 1.4fr;
+    gap: 10px; margin-bottom: 16px;
+  }
+  .predict-btn-clear {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 10px; padding: 13px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 14px; font-weight: 600;
+    color: rgba(255,255,255,0.6);
+    cursor: pointer; transition: background var(--transition), color var(--transition);
+  }
+  .predict-btn-clear:hover { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.9); }
+
+  .predict-btn-submit {
+    background: var(--green);
+    border: none; border-radius: 10px; padding: 13px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 15px; font-weight: 700; color: #fff;
+    cursor: pointer;
+    transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+    letter-spacing: 0.2px;
+  }
+  .predict-btn-submit:hover {
+    background: var(--green-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(30,138,74,0.35);
+  }
+  .predict-btn-submit:active { transform: scale(0.98); box-shadow: none; }
+  .predict-btn-submit.loading { opacity: 0.65; cursor: not-allowed; transform: none; }
+
+  .predict-output-wrap {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 12px; padding: 14px 16px;
+    margin-bottom: 14px; min-height: 180px;
+  }
+  .predict-output-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 8.5px;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: rgba(255,255,255,0.25); margin-bottom: 12px;
+  }
+  .predict-output-box { min-height: 130px; }
+  .predict-placeholder {
+    font-size: 12px; color: rgba(255,255,255,0.22);
+    font-family: 'JetBrains Mono', monospace;
+    line-height: 1.6; padding: 20px 0; text-align: center;
+  }
+  .predict-result-row {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 10px; font-size: 14px; color: rgba(255,255,255,0.85);
+  }
+  .predict-result-icon { font-size: 17px; flex-shrink: 0; }
+  .predict-result-key {
+    font-family: 'JetBrains Mono', monospace; font-size: 9.5px;
+    letter-spacing: 0.5px; color: rgba(255,255,255,0.38);
+  }
+  .predict-result-val {
+    font-weight: 700; font-size: 15px; color: #fff; letter-spacing: -0.3px;
+  }
+  .predict-result-val.up   { color: #4ade80; }
+  .predict-result-val.down { color: #f87171; }
+  .predict-divider { border: none; border-top: 1px solid rgba(255,255,255,0.07); margin: 10px 0; }
+
+  .predict-flag-row { margin-bottom: 14px; }
+  .predict-flag-btn {
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 10px; padding: 11px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 13px; font-weight: 600;
+    color: rgba(255,255,255,0.5); cursor: pointer;
+    transition: background var(--transition), color var(--transition);
+  }
+  .predict-flag-btn:hover { background: rgba(255,255,255,0.09); color: rgba(255,255,255,0.8); }
+
+  .predict-api-status {
+    display: flex; align-items: center; gap: 8px;
+    font-family: 'JetBrains Mono', monospace; font-size: 8.5px;
+    letter-spacing: 1px; color: rgba(255,255,255,0.28);
+    text-transform: uppercase; padding-top: 4px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  .api-dot {
+    width: 5px; height: 5px; border-radius: 50%; background: #666; flex-shrink: 0;
+  }
+  .api-dot.online  { background: #4ade80; animation: pulse 2s infinite; }
+  .api-dot.offline { background: #f87171; }
+  .api-dot.demo    { background: #fbbf24; }
+
+  /* Right predict charts */
+  .predict-charts-header { margin-bottom: 20px; }
+  .predict-chart-title {
+    font-size: 20px; font-weight: 700; color: var(--ink);
+    letter-spacing: -0.4px; margin-bottom: 4px;
+  }
+  .predict-chart-sub {
+    font-family: 'JetBrains Mono', monospace; font-size: 9.5px;
+    color: var(--ink-light); letter-spacing: 0.2px;
+  }
+  .predict-error {
+    color: var(--red); font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; padding: 10px 0;
+  }
+  .predict-loading {
+    color: rgba(255,255,255,0.35);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; padding: 20px 0; text-align: center;
+    animation: blink 1.2s step-end infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* ── MAIN ──────────────────────────────────── */
+  main { max-width: 1300px; margin: 0 auto; padding: 36px 40px 80px; }
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* ── STAT CARDS ────────────────────────────── */
+  .stat-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(185px, 1fr));
+    gap: 12px; margin-bottom: 28px;
+  }
+
+  .stat-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 22px; position: relative; overflow: hidden;
+    transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+    cursor: default;
+  }
+  .stat-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: var(--green); opacity: 0.5;
+    transition: opacity var(--transition);
+  }
+  .stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow);
+    border-color: var(--border-dark);
+  }
+  .stat-card:hover::before { opacity: 1; }
+
+  .stat-card.dark {
+    background: var(--ink); border-color: var(--ink);
+  }
+  .stat-card.dark::before { background: var(--green); opacity: 1; }
+  .stat-card.dark .stat-label { color: rgba(255,255,255,0.35); }
+  .stat-card.dark .stat-value { color: var(--accent-light); }
+  .stat-card.dark .stat-sub { color: rgba(255,255,255,0.45); }
+
+  .stat-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 7.5px;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: var(--ink-xlight); margin-bottom: 10px;
+  }
+  .stat-value {
+    font-size: 24px; font-weight: 700; color: var(--ink);
+    line-height: 1.1; letter-spacing: -0.5px;
+  }
+  .stat-sub {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    color: var(--ink-light); margin-top: 5px;
+  }
+  .stat-up   { color: var(--green-dark); }
+  .stat-down { color: var(--red); }
+
+  /* ── CHART CARDS ───────────────────────────── */
+  .chart-card {
+    background: #fff; border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 24px 28px; margin-bottom: 14px;
+    transition: box-shadow var(--transition);
+  }
+  .chart-card:hover { box-shadow: var(--shadow-sm); }
+  .chart-header {
+    display: flex; justify-content: space-between;
+    align-items: flex-start; margin-bottom: 18px; flex-wrap: wrap; gap: 10px;
+  }
+  .chart-title { font-size: 14px; font-weight: 600; color: var(--ink); letter-spacing: -0.2px; }
+  .chart-subtitle {
+    font-family: 'JetBrains Mono', monospace; font-size: 9px;
+    letter-spacing: 0.3px; color: var(--ink-light); margin-top: 3px;
+  }
+  .chart-controls { display: flex; gap: 5px; flex-wrap: wrap; }
+  .btn-period {
+    padding: 5px 11px; border-radius: 6px; border: 1px solid var(--border);
+    background: transparent;
+    font-family: 'JetBrains Mono', monospace; font-size: 8.5px;
+    letter-spacing: 1px; text-transform: uppercase;
+    color: var(--ink-light); cursor: pointer;
+    transition: background var(--transition), color var(--transition), border-color var(--transition);
+  }
+  .btn-period:hover { background: var(--bg-2); border-color: var(--border-dark); color: var(--ink); }
+  .btn-period.active {
+    background: var(--green); border-color: var(--green); color: #fff;
+  }
+  canvas { width: 100% !important; max-height: 290px; }
+
+  /* ── TABLE ─────────────────────────────────── */
+  .table-wrap { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; background: #fff; font-size: 13px; }
+  thead th {
+    background: var(--bg-2);
+    color: var(--ink-light);
+    font-family: 'JetBrains Mono', monospace; font-size: 7.5px; letter-spacing: 1.5px;
+    text-transform: uppercase; padding: 12px 16px; text-align: left;
+    white-space: nowrap; font-weight: 500;
+    border-bottom: 1px solid var(--border);
+  }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background var(--transition); }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--bg-2); }
+  tbody td { padding: 10px 16px; color: var(--ink-mid); vertical-align: middle; }
+  tbody td:first-child {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-light);
+  }
+  td.gold-val { font-size: 14px; font-weight: 700; color: var(--ink); }
+  td.gram-val {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    color: var(--green-dark); font-weight: 600;
+  }
+  td.pos { color: var(--green-dark); font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+  td.neg { color: var(--red); font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+
+  .era-badge {
+    display: inline-block; padding: 2px 7px; border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace; font-size: 7px;
+    letter-spacing: 1px; text-transform: uppercase; font-weight: 600;
+  }
+  .era-independence  { background: #E6F7ED; color: #155E33; }
+  .era-liberalisation{ background: #DBEAFE; color: #1E40AF; }
+  .era-modern        { background: var(--green-pale); color: var(--green-dark); }
+  .era-crisis        { background: #FEE2E2; color: #991B1B; }
+
+  /* ── SENTIMENT ─────────────────────────────── */
+  .sentiment-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 14px; margin-bottom: 14px;
+  }
+  .sentiment-meter {
+    background: #fff; border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 22px;
+  }
+  .meter-title { font-size: 13px; font-weight: 600; margin-bottom: 14px; color: var(--ink); }
+  .meter-bar-wrap {
+    background: var(--bg-3); border-radius: 100px; height: 6px;
+    overflow: hidden; margin-bottom: 7px;
+  }
+  .meter-bar {
+    height: 100%; border-radius: 100px;
+    background: linear-gradient(90deg, var(--green-dark), var(--accent));
+    transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
+  }
+  .meter-labels {
+    display: flex; justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace; font-size: 7.5px;
+    letter-spacing: 1px; color: var(--ink-xlight); text-transform: uppercase;
+  }
+  .news-feed { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+  .news-item {
+    padding: 10px 14px; background: var(--bg-2);
+    border-left: 2px solid var(--border-dark);
+    border-radius: 0 6px 6px 0;
+    font-size: 13px; line-height: 1.55; color: var(--ink-mid);
+    transition: background var(--transition), border-left-color var(--transition);
+  }
+  .news-item:hover { background: var(--bg-3); }
+  .news-item.pos-news { border-left-color: var(--green); }
+  .news-item.neg-news { border-left-color: var(--red); }
+  .news-date {
+    font-family: 'JetBrains Mono', monospace; font-size: 7.5px;
+    letter-spacing: 1.5px; color: var(--ink-xlight); text-transform: uppercase; margin-bottom: 4px;
+  }
+
+  /* ── MODELS ────────────────────────────────── */
+  .model-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 12px; margin-bottom: 20px;
+  }
+  .model-card {
+    background: #fff; border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 20px;
+    transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+  }
+  .model-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow);
+    border-color: var(--border-dark);
+  }
+  .model-name {
+    font-family: 'JetBrains Mono', monospace; font-size: 7.5px;
+    letter-spacing: 2px; text-transform: uppercase; color: var(--ink-xlight); margin-bottom: 8px;
+  }
+  .model-accuracy {
+    font-size: 38px; font-weight: 700; color: var(--ink);
+    line-height: 1; margin-bottom: 6px; letter-spacing: -2px;
+  }
+  .accuracy-bar { height: 3px; border-radius: 100px; background: var(--bg-3); margin: 8px 0; overflow: hidden; }
+  .accuracy-fill {
+    height: 100%; border-radius: 100px;
+    background: linear-gradient(90deg, var(--green-dark), var(--accent));
+    transition: width 1s cubic-bezier(0.4,0,0.2,1);
+  }
+  .metric-row {
+    display: flex; justify-content: space-between;
+    padding: 5px 0; border-bottom: 1px solid var(--border);
+    font-size: 12px; color: var(--ink-mid);
+  }
+  .metric-row:last-child { border-bottom: none; }
+  .metric-key { color: var(--ink-light); }
+  .metric-val { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink); }
+
+  /* ── HEATMAP ───────────────────────────────── */
+  .hm-cell {
+    aspect-ratio: 1; border-radius: 5px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace; font-size: 9.5px; font-weight: 500;
+    cursor: default; transition: transform var(--transition), opacity var(--transition);
+  }
+  .hm-cell:hover { transform: scale(1.08); }
+
+  /* ── FOOTER ────────────────────────────────── */
+  footer {
+    background: var(--bg-2);
+    padding: 22px 40px; text-align: center;
+    border-top: 1px solid var(--border);
+  }
+  .footer-text {
+    font-family: 'JetBrains Mono', monospace; font-size: 8.5px;
+    letter-spacing: 2px; color: var(--ink-xlight); text-transform: uppercase;
+  }
+
+  /* ── SECTION HEADER ────────────────────────── */
+  .section-divider {
+    display: flex; align-items: center; gap: 14px;
+    margin: 28px 0 18px; padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-divider h2 {
+    font-size: 20px; font-weight: 700; color: var(--ink);
+    white-space: nowrap; letter-spacing: -0.5px;
+  }
+  .section-tag {
+    font-family: 'JetBrains Mono', monospace; font-size: 7.5px;
+    letter-spacing: 2px; color: var(--green-dark);
+    background: var(--green-pale);
+    border: 1px solid rgba(30,138,74,0.2);
+    border-radius: 4px; padding: 3px 8px; text-transform: uppercase;
+  }
+
+  /* ── TIMELINE ──────────────────────────────── */
+  .timeline { position: relative; padding-left: 28px; }
+  .timeline::before {
+    content: ''; position: absolute; left: 5px; top: 0; bottom: 0;
+    width: 1px; background: linear-gradient(180deg, var(--green), var(--border));
+  }
+  .timeline-item { position: relative; margin-bottom: 28px; }
+  .timeline-item::before {
+    content: ''; position: absolute; left: -25px; top: 6px;
+    width: 9px; height: 9px; border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 0 3px var(--bg), 0 0 0 5px rgba(30,138,74,0.25);
+    transition: box-shadow var(--transition);
+  }
+  .timeline-item:hover::before {
+    box-shadow: 0 0 0 3px var(--bg), 0 0 0 6px rgba(30,138,74,0.45);
+  }
+  .tl-year {
+    font-family: 'JetBrains Mono', monospace; font-size: 8.5px;
+    letter-spacing: 2px; color: var(--green-dark); text-transform: uppercase; margin-bottom: 3px;
+  }
+  .tl-title { font-size: 16px; font-weight: 600; color: var(--ink); margin-bottom: 4px; letter-spacing: -0.2px; }
+  .tl-desc  { font-size: 13px; color: var(--ink-light); line-height: 1.65; }
+  .tl-price {
+    display: inline-block; margin-top: 8px;
+    background: var(--green-pale);
+    border: 1px solid rgba(30,138,74,0.2);
+    color: var(--green-dark);
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    padding: 3px 10px; border-radius: 5px; letter-spacing: 0.5px;
+  }
+
+  /* ── ANIMATIONS ────────────────────────────── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .section.active > * { animation: fadeUp 0.28s ease forwards; }
+
+  /* ── HAMBURGER NAV ─────────────────────────── */
+  .hamburger-btn {
+    display: none;
+    background: none; border: none; cursor: pointer;
+    padding: 8px; border-radius: 8px;
+    flex-direction: column; gap: 5px; align-items: center; justify-content: center;
+    transition: background var(--transition);
+    position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
+    z-index: 200;
+  }
+  .hamburger-btn:hover { background: var(--bg-2); }
+  .hamburger-btn span {
+    display: block; width: 22px; height: 2px;
+    background: var(--ink); border-radius: 2px;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+  .hamburger-btn.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .hamburger-btn.open span:nth-child(2) { opacity: 0; }
+  .hamburger-btn.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  .mobile-menu {
+    display: none;
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(13,31,23,0.6); z-index: 150;
+    backdrop-filter: blur(4px);
+    opacity: 0; transition: opacity 0.25s ease;
+    pointer-events: none;
+  }
+  .mobile-menu.open { opacity: 1; pointer-events: all; }
+
+  .mobile-menu-panel {
+    position: absolute; top: 0; right: 0; bottom: 0;
+    width: 280px; background: #fff;
+    padding: 72px 0 24px;
+    box-shadow: -4px 0 32px rgba(0,0,0,0.12);
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+    overflow-y: auto;
+  }
+  .mobile-menu.open .mobile-menu-panel { transform: translateX(0); }
+
+  .mobile-nav-tab {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 24px;
+    font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; font-weight: 500;
+    color: var(--ink-mid); cursor: pointer; border: none; background: none; width: 100%;
+    text-align: left; border-left: 3px solid transparent;
+    transition: background var(--transition), color var(--transition), border-color var(--transition);
+  }
+  .mobile-nav-tab:hover { background: var(--bg-2); color: var(--ink); }
+  .mobile-nav-tab.active {
+    background: var(--green-pale); color: var(--green-dark);
+    border-left-color: var(--green); font-weight: 600;
+  }
+  .mobile-nav-tab .tab-icon { font-size: 16px; }
+  .mobile-menu-close {
+    position: absolute; top: 20px; right: 20px;
+    background: var(--bg-2); border: none; border-radius: 8px;
+    width: 36px; height: 36px; cursor: pointer; font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ink); transition: background var(--transition);
+  }
+  .mobile-menu-close:hover { background: var(--bg-3); }
+  .mobile-menu-divider {
+    height: 1px; background: var(--border); margin: 8px 24px;
+  }
+  .mobile-menu-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 7.5px;
+    letter-spacing: 2px; text-transform: uppercase; color: var(--ink-xlight);
+    padding: 12px 24px 4px;
+  }
+
+  @media (max-width: 768px) {
+    .header-inner { grid-template-columns: 1fr; }
+    .header-stats { align-items: flex-start; }
+    .price-panels { flex-direction: column; gap: 10px; }
+    .price-divider { display: none; }
+    main { padding: 24px 16px 60px; }
+    .nav-inner { padding: 0 16px; }
+    .sentiment-grid { grid-template-columns: 1fr; }
+    .header-inner { padding: 24px 20px 20px; }
+    footer { padding: 18px 20px; }
+    nav { position: relative; }
+    .hamburger-btn { display: flex; }
+    .nav-inner { padding-right: 56px; }
+    .mobile-menu { display: block; }
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <div>
+      <div class="logo-mark">
+        <div class="gold-icon">◉</div>
+        <span class="logo-text">Gold Sentiment Analysis · India</span>
+      </div>
+      <h1 class="title">Sentiment <span>Analysis</span><br>Dashboard</h1>
+      <p class="header-sub">NLP-driven sentiment analysis of Indian gold markets — independence era to present</p>
+    </div>
+    <div class="header-stats">
+      <div class="live-badge">
+        <div class="live-dot"></div>
+        <span class="live-text">Live Analysis</span>
+      </div>
+      <div class="price-panels">
+        <div class="current-price-block">
+          <div class="price-label">INR / 10g · May 2026</div>
+          <div class="price-value">₹93,450</div>
+          <div class="price-change">▲ +1.2% from last month</div>
+        </div>
+        <div class="price-divider"></div>
+        <div class="current-price-block">
+          <div class="price-label">Price Per Gram · INR</div>
+          <div class="price-value gram">₹9,345</div>
+          <div class="price-change">≈ $99.7 / gram</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<nav>
+  <div class="nav-inner">
+    <button class="nav-tab active" onclick="showSection('overview',this)">Overview</button>
+    <button class="nav-tab predict-tab" onclick="showSection('predict',this)">🔮 Predict Price</button>
+    <button class="nav-tab" onclick="showSection('history',this)">Historical Data</button>
+    <button class="nav-tab" onclick="showSection('sentiment',this)">Sentiment Engine</button>
+    <button class="nav-tab" onclick="showSection('models',this)">ML Models</button>
+    <button class="nav-tab" onclick="showSection('timeline',this)">India Timeline</button>
+  </div>
+  <button class="hamburger-btn" id="hamburgerBtn" onclick="toggleMobileMenu()" aria-label="Open menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- Mobile Slide Menu -->
+<div class="mobile-menu" id="mobileMenu" onclick="closeMobileMenuOnBackdrop(event)">
+  <div class="mobile-menu-panel">
+    <button class="mobile-menu-close" onclick="closeMobileMenu()">✕</button>
+    <div class="mobile-menu-label">Navigation</div>
+    <button class="mobile-nav-tab active" onclick="showSection('overview',null);closeMobileMenu()">
+      <span class="tab-icon">📊</span> Overview
+    </button>
+    <button class="mobile-nav-tab" onclick="showSection('predict',null);closeMobileMenu()" style="color:#c0392b;">
+      <span class="tab-icon">🔮</span> Predict Price
+    </button>
+    <div class="mobile-menu-divider"></div>
+    <button class="mobile-nav-tab" onclick="showSection('history',null);closeMobileMenu()">
+      <span class="tab-icon">📅</span> Historical Data
+    </button>
+    <button class="mobile-nav-tab" onclick="showSection('sentiment',null);closeMobileMenu()">
+      <span class="tab-icon">🧠</span> Sentiment Engine
+    </button>
+    <button class="mobile-nav-tab" onclick="showSection('models',null);closeMobileMenu()">
+      <span class="tab-icon">🤖</span> ML Models
+    </button>
+    <button class="mobile-nav-tab" onclick="showSection('timeline',null);closeMobileMenu()">
+      <span class="tab-icon">🇮🇳</span> India Timeline
+    </button>
+  </div>
+</div>
+
+<main>
+
+  <!-- OVERVIEW -->
+  <section id="overview" class="section active">
+    <div class="stat-grid">
+      <div class="stat-card dark">
+        <div class="stat-label">Gold Price · Per Gram</div>
+        <div class="stat-value">₹9,345</div>
+        <div class="stat-sub">≈ $99.7 USD / gram</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Gold · INR / 10g · Today</div>
+        <div class="stat-value">₹93,450</div>
+        <div class="stat-sub stat-up">▲ +28% in 12 months</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Sentiment Score</div>
+        <div class="stat-value">0.72</div>
+        <div class="stat-sub stat-up">Bullish · VADER</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Best Model Accuracy</div>
+        <div class="stat-value">94.3%</div>
+        <div class="stat-sub">Random Forest (GLD ETF)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Per Gram in 1947</div>
+        <div class="stat-value">₹8.86</div>
+        <div class="stat-sub">₹88.62 per 10g in 1947</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Nominal Growth</div>
+        <div class="stat-value">105,400×</div>
+        <div class="stat-sub stat-up">Since independence 1947</div>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">GLD ETF Dataset 2008–2018</div>
+          <div class="chart-subtitle">SPX · GLD · USO · SLV · EUR/USD from your notebook</div>
+        </div>
+        <div class="chart-controls">
+          <button class="btn-period active" onclick="updateChart('gld',event)">GLD</button>
+          <button class="btn-period" onclick="updateChart('spx',event)">SPX</button>
+          <button class="btn-period" onclick="updateChart('slv',event)">SLV</button>
+          <button class="btn-period" onclick="updateChart('uso',event)">USO</button>
+        </div>
+      </div>
+      <canvas id="mainChart"></canvas>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">Indian Gold Price History — 1947 to 2025</div>
+          <div class="chart-subtitle">INR / 10g · hover for per-gram price</div>
+        </div>
+      </div>
+      <canvas id="indiaChart"></canvas>
+    </div>
+  </section>
+
+  <!-- PREDICT -->
+  <section id="predict" class="section">
+    <div class="predict-wrapper">
+      <!-- Left: Input Panel -->
+      <div class="predict-left">
+        <div class="predict-phone-card">
+          <div class="predict-phone-header">
+            <div class="predict-phone-logo">🪙</div>
+            <div>
+              <div class="predict-phone-title">Gold Price Prediction</div>
+              <div class="predict-phone-sub">using Sentiment Analysis</div>
+            </div>
+          </div>
+          <p class="predict-phone-desc">Enter any date to predict next day gold price</p>
+
+          <div class="predict-field-wrap">
+            <label class="predict-label">Enter Date (YYYY-MM-DD)</label>
+            <input type="date" id="predictDateInput" class="predict-date-input" />
+          </div>
+
+          <div class="predict-btn-row">
+            <button class="predict-btn-clear" onclick="clearPredict()">Clear</button>
+            <button class="predict-btn-submit" onclick="runPredict()">Submit</button>
+          </div>
+
+          <div class="predict-output-wrap">
+            <div class="predict-output-label">output</div>
+            <div class="predict-output-box" id="predictOutput">
+              <div class="predict-placeholder">Enter a date and press Submit to see the prediction.</div>
+            </div>
+          </div>
+
+          <div class="predict-flag-row">
+            <button class="predict-flag-btn" onclick="flagResult()">⚑ Flag Result</button>
+          </div>
+
+          <div class="predict-api-status" id="apiStatus">
+            <span class="api-dot" id="apiDot"></span>
+            <span id="apiStatusText">Checking backend…</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Charts Panel -->
+      <div class="predict-right">
+        <div class="predict-charts-header">
+          <h2 class="predict-chart-title">Gold Price Analysis</h2>
+          <p class="predict-chart-sub">Historical trend · 1947 to present · Hover for per-gram price</p>
+        </div>
+
+        <div class="chart-card" style="margin-bottom:14px;">
+          <div class="chart-header">
+            <div>
+              <div class="chart-title">India Gold Price — 1947 to 2025</div>
+              <div class="chart-subtitle">INR per 10g · full history</div>
+            </div>
+            <div class="chart-controls">
+              <button class="btn-period active" onclick="switchPredChart('india',event)">India INR</button>
+              <button class="btn-period" onclick="switchPredChart('usd',event)">USD/oz</button>
+            </div>
+          </div>
+          <canvas id="predHistoryChart" style="max-height:200px;"></canvas>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+          <div class="chart-card">
+            <div class="chart-title" style="margin-bottom:12px;">Live Sentiment Score</div>
+            <div id="sentGaugeWrap" style="text-align:center;">
+              <canvas id="sentGauge" style="max-height:150px;"></canvas>
+            </div>
+            <div style="text-align:center;margin-top:8px;">
+              <span id="sentScore" style="font-size:28px;font-weight:700;color:var(--ink);letter-spacing:-1px;">0.72</span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:7.5px;color:var(--ink-xlight);letter-spacing:1px;display:block;text-transform:uppercase;margin-top:2px;">VADER COMPOUND</span>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <div class="chart-title" style="margin-bottom:12px;">Sentiment Distribution</div>
+            <canvas id="predSentPie" style="max-height:150px;"></canvas>
+            <div style="display:flex;gap:10px;margin-top:8px;font-size:9px;color:var(--ink-light);font-family:'JetBrains Mono',monospace;flex-wrap:wrap;">
+              <span style="color:var(--green-dark);">● Positive</span>
+              <span style="color:var(--ink-xlight);">● Neutral</span>
+              <span style="color:var(--red);">● Negative</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-header">
+            <div>
+              <div class="chart-title">Model: Actual vs Predicted GLD</div>
+              <div class="chart-subtitle">Random Forest · test set · last 40 samples</div>
+            </div>
+          </div>
+          <canvas id="predModelChart" style="max-height:180px;"></canvas>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HISTORY -->
+  <section id="history" class="section">
+    <div class="section-divider">
+      <h2>Historical Gold Data</h2>
+      <span class="section-tag">1947 – 2025</span>
+    </div>
+    <p style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.3px;color:var(--ink-light);margin-bottom:18px;">
+      INR per 10g and per gram — with USD/oz and key economic events
+    </p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Year</th><th>INR / 10g</th><th>INR / Gram</th><th>USD / oz</th><th>YoY %</th><th>Era</th><th>Key Event</th>
+          </tr>
+        </thead>
+        <tbody id="historyTable"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- SENTIMENT -->
+  <section id="sentiment" class="section">
+    <div class="section-divider">
+      <h2>Sentiment Engine</h2>
+      <span class="section-tag">VADER · FinBERT</span>
+    </div>
+    <div class="sentiment-grid">
+      <div class="sentiment-meter">
+        <div class="meter-title">Overall Gold Sentiment</div>
+        <div class="meter-bar-wrap"><div class="meter-bar" style="width:72%"></div></div>
+        <div class="meter-labels"><span>Bearish</span><span>Neutral</span><span>Bullish</span></div>
+        <div style="margin-top:14px;font-size:34px;font-weight:700;color:var(--ink);letter-spacing:-1px;">0.72 <span style="font-size:10px;color:var(--ink-xlight);font-family:'JetBrains Mono',monospace;font-weight:400;letter-spacing:1px;">VADER COMPOUND</span></div>
+        <div style="font-size:11px;color:var(--ink-light);margin-top:8px;font-family:'JetBrains Mono',monospace;">VADER + FinBERT on financial news</div>
+      </div>
+      <div class="sentiment-meter">
+        <div class="meter-title">Sentiment Distribution</div>
+        <canvas id="sentimentPie" style="max-height:160px;"></canvas>
+        <div style="display:flex;gap:14px;margin-top:10px;font-size:10px;color:var(--ink-light);font-family:'JetBrains Mono',monospace;">
+          <span style="color:var(--green-dark);">● Positive 58%</span>
+          <span style="color:var(--ink-xlight);">● Neutral 24%</span>
+          <span style="color:var(--red);">● Negative 18%</span>
+        </div>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title" style="margin-bottom:14px;">Sentiment vs Gold Price Correlation</div>
+      <canvas id="sentimentChart"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title" style="margin-bottom:5px;">News Sentiment Feed</div>
+      <div class="chart-subtitle" style="margin-bottom:14px;">VADER-scored headlines — mirrors fetch_news() pipeline</div>
+      <div class="news-feed" id="newsFeed"></div>
+    </div>
+  </section>
+
+  <!-- MODELS -->
+  <section id="models" class="section">
+    <div class="section-divider">
+      <h2>ML Model Performance</h2>
+      <span class="section-tag">GLD ETF 2008–2018</span>
+    </div>
+    <p style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-light);margin-bottom:18px;">
+      RandomForestRegressor pipeline · features: SPX · USO · SLV · EUR/USD · Sentiment
+    </p>
+    <div class="model-grid" id="modelGrid"></div>
+    <div class="chart-card">
+      <div class="chart-title" style="margin-bottom:5px;">Correlation Heatmap</div>
+      <div class="chart-subtitle" style="margin-bottom:14px;">GLD · SPX · USO · SLV · EUR/USD</div>
+      <div id="heatmap"></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title" style="margin-bottom:14px;">Feature Importance — Random Forest</div>
+      <canvas id="featureChart"></canvas>
+    </div>
+  </section>
+
+  <!-- TIMELINE -->
+  <section id="timeline" class="section">
+    <div class="section-divider">
+      <h2>India Gold Timeline</h2>
+      <span class="section-tag">1947 – 2025</span>
+    </div>
+    <div class="timeline" id="timelineContent"></div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="footer-text">Sentimental Gold Analysis · NLP + ML · India 1947–2025 · Python &amp; HTML</div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script>
+// DATA
+const gldDates = ['Jan-08','Jul-08','Jan-09','Jul-09','Jan-10','Jul-10','Jan-11','Jul-11','Jan-12','Jul-12','Jan-13','Jul-13','Jan-14','Jul-14','Jan-15','Jul-15','Jan-16','Jul-16','Jan-17','Jul-17','Jan-18'];
+const gldData  = [84.86,92.30,86.60,94.50,107.00,117.50,132.00,158.80,157.20,152.50,162.20,124.00,119.50,124.00,114.20,107.00,104.30,126.80,118.00,121.00,124.00];
+const spxData  = [1447,1260,797,987,1115,1101,1286,1292,1316,1362,1480,1676,1845,1951,2020,2063,1880,2149,2278,2477,2720];
+const slvData  = [15.18,17.22,11.40,14.70,17.00,19.00,29.00,39.50,30.00,27.00,30.00,19.00,20.50,20.00,16.00,14.60,14.00,19.00,15.60,15.30,16.00];
+const usoData  = [78.47,99.60,26.00,37.00,38.50,36.00,38.00,39.00,38.00,32.00,35.00,34.00,37.00,38.00,26.00,17.00,10.00,12.00,13.00,14.00,13.50];
+
+const indiaData = [
+  {year:1947,price:88.62,usd:35,change:null,era:'independence',event:'Indian Independence — Gold standard era'},
+  {year:1950,price:99.18,usd:35,change:3.9,era:'independence',event:'Republic of India established'},
+  {year:1955,price:98.44,usd:35,change:-0.1,era:'independence',event:'Five Year Plan era'},
+  {year:1960,price:111.87,usd:35,change:2.6,era:'independence',event:'Gold price stable under Bretton Woods'},
+  {year:1965,price:134.51,usd:35,change:3.7,era:'independence',event:'India-Pakistan War, INR devaluation pressure'},
+  {year:1966,price:144.00,usd:35,change:7.8,era:'independence',event:'INR devalued by 36.5%'},
+  {year:1970,price:184.80,usd:36,change:6.5,era:'independence',event:'End of Bretton Woods approaching'},
+  {year:1971,price:193.00,usd:38,change:4.4,era:'independence',event:'Nixon Shock — US ends gold convertibility'},
+  {year:1973,price:278.50,usd:65,change:20.0,era:'independence',event:'Oil crisis, gold price surges globally'},
+  {year:1975,price:540.00,usd:140,change:39.3,era:'independence',event:'Gold reaches historic highs globally'},
+  {year:1979,price:937.00,usd:300,change:20.0,era:'independence',event:'Soviet-Afghan war, inflation spike'},
+  {year:1980,price:1330.00,usd:590,change:41.9,era:'independence',event:'All-time peak — ₹1,330/10g (historic)'},
+  {year:1985,price:2130.00,usd:327,change:9.9,era:'independence',event:'Gold corrects but INR weakens'},
+  {year:1990,price:3200.00,usd:385,change:8.5,era:'independence',event:'Pre-liberalisation era'},
+  {year:1991,price:3466.00,usd:363,change:8.3,era:'liberalisation',event:'Balance of payments crisis, gold pledged abroad'},
+  {year:1995,price:4680.00,usd:384,change:7.8,era:'liberalisation',event:'Post-liberalisation growth'},
+  {year:1999,price:4234.00,usd:290,change:-2.5,era:'liberalisation',event:'Washington Agreement on Gold'},
+  {year:2000,price:4400.00,usd:280,change:3.9,era:'liberalisation',event:'Dotcom bust — gold as safe haven'},
+  {year:2003,price:5600.00,usd:363,change:8.3,era:'modern',event:'Iraq War, global uncertainty'},
+  {year:2005,price:7000.00,usd:513,change:11.8,era:'modern',event:'Gold bull market begins'},
+  {year:2007,price:10800.00,usd:838,change:24.5,era:'modern',event:'Pre-crisis safe haven demand'},
+  {year:2008,price:12500.00,usd:869,change:15.7,era:'crisis',event:'Global financial crisis — gold spikes'},
+  {year:2009,price:14500.00,usd:972,change:16.0,era:'crisis',event:'Post-crisis recovery, demand surges'},
+  {year:2010,price:18500.00,usd:1225,change:27.6,era:'modern',event:'India largest gold consumer globally'},
+  {year:2011,price:26400.00,usd:1571,change:42.7,era:'modern',event:'Gold peak — ₹26,400 (then-record)'},
+  {year:2012,price:31050.00,usd:1669,change:17.6,era:'modern',event:'European debt crisis'},
+  {year:2013,price:29600.00,usd:1411,change:-4.7,era:'modern',event:'Gold correction after years of rally'},
+  {year:2015,price:26343.00,usd:1060,change:-5.8,era:'modern',event:'US dollar strengthens, gold falls'},
+  {year:2016,price:28623.00,usd:1151,change:8.7,era:'modern',event:'Brexit uncertainty, demonetisation'},
+  {year:2017,price:29667.00,usd:1257,change:3.6,era:'modern',event:'Demonetisation aftermath'},
+  {year:2018,price:31438.00,usd:1268,change:5.9,era:'modern',event:'Trade war fears'},
+  {year:2019,price:35220.00,usd:1477,change:12.0,era:'modern',event:'Global slowdown, repo rate cuts'},
+  {year:2020,price:48651.00,usd:1891,change:38.1,era:'modern',event:'COVID-19 — record gold demand'},
+  {year:2021,price:47960.00,usd:1800,change:-1.4,era:'modern',event:'Vaccine rally reduces safe haven demand'},
+  {year:2022,price:52670.00,usd:1800,change:9.8,era:'modern',event:'Russia-Ukraine war, inflation surge'},
+  {year:2023,price:60000.00,usd:1943,change:13.9,era:'modern',event:'Central bank gold buying spree'},
+  {year:2024,price:72000.00,usd:2300,change:20.0,era:'modern',event:'Geopolitical tensions, Fed rate pivot'},
+  {year:2025,price:93450.00,usd:3100,change:29.8,era:'modern',event:'Gold at all-time highs globally'},
+];
+
+const sentimentDates = ['Jan-23','Feb-23','Mar-23','Apr-23','May-23','Jun-23','Jul-23','Aug-23','Sep-23','Oct-23','Nov-23','Dec-23','Jan-24','Feb-24','Mar-24','Apr-24','May-24','Jun-24'];
+const sentimentScores = [0.42,0.55,0.61,0.48,0.52,0.68,0.74,0.71,0.63,0.76,0.80,0.82,0.78,0.85,0.88,0.75,0.72,0.79];
+const goldPriceSentiment = [52000,54000,56000,55000,57000,60000,63000,62000,61000,65000,68000,72000,74000,78000,83000,80000,85000,90000];
+
+const models = [
+  {name:'Random Forest',accuracy:94.3,precision:93.8,recall:94.1,f1:93.9,type:'Regressor/Classifier'},
+  {name:'Logistic Regression',accuracy:86.7,precision:85.2,recall:87.1,f1:86.1,type:'Classifier'},
+  {name:'Naive Bayes',accuracy:82.4,precision:81.0,recall:83.5,f1:82.2,type:'Classifier'},
+  {name:'SVM',accuracy:89.1,precision:88.7,recall:89.5,f1:89.1,type:'Classifier'},
+  {name:'LSTM Neural Network',accuracy:91.8,precision:91.2,recall:92.1,f1:91.6,type:'Deep Learning'},
+  {name:'FinBERT / BERT',accuracy:93.5,precision:93.0,recall:93.8,f1:93.4,type:'Transformer NLP'},
+];
+
+const newsItems = [
+  {date:'May 2026',text:'RBI increases gold reserves to record levels as dollar weakens globally',sentiment:'pos',score:0.82},
+  {date:'Apr 2026',text:'India gold imports surge 40% ahead of wedding season, demand at 5-year high',sentiment:'pos',score:0.75},
+  {date:'Apr 2026',text:'Fed signals prolonged high rates — gold retreats from recent peak',sentiment:'neg',score:-0.43},
+  {date:'Mar 2026',text:'Geopolitical tensions in Middle East push gold above ₹93,000 per 10g',sentiment:'pos',score:0.68},
+  {date:'Mar 2026',text:'SEBI introduces new gold ETF regulations for Indian investors',sentiment:'neu',score:0.12},
+  {date:'Feb 2026',text:'Central banks globally net buyers of gold for 15th consecutive quarter',sentiment:'pos',score:0.88},
+];
+
+const timelineItems = [
+  {year:'1947',title:'Indian Independence',desc:'Gold: ₹88.62 per 10g (₹8.86/g). India inherits a gold-based monetary system under colonial legacy.',price:'₹8.86/g · ₹88.62/10g'},
+  {year:'1966',title:'Rupee Devaluation',desc:'INR devalued by 36.5%, pushing gold to ₹144/10g (₹14.4/g). Government introduces Gold Control Act.',price:'₹14.4/g · ₹144/10g'},
+  {year:'1971',title:'Nixon Shock',desc:'USA ends gold convertibility. Gold freed from $35/oz peg. Indian gold begins rapid ascent as INR weakens.',price:'₹19.3/g · ₹193/10g'},
+  {year:'1980',title:'Historic Peak (then)',desc:'Gold peaks at ₹1,330/10g (₹133/g) — a 15x rise from independence. Oil crisis and global inflation drive demand.',price:'₹133/g · ₹1,330/10g'},
+  {year:'1991',title:'Balance of Payments Crisis',desc:'India pledges 67 tonnes of gold to Bank of England to avert sovereign default.',price:'₹346.6/g · ₹3,466/10g'},
+  {year:'2008',title:'Global Financial Crisis',desc:'Gold becomes ultimate safe haven. Indian demand surges as equity markets crash 50%+.',price:'₹1,250/g · ₹12,500/10g'},
+  {year:'2016',title:'Demonetisation',desc:'PM Modi demonetises ₹500 and ₹1,000 notes. Gold demand spikes briefly as citizens convert cash.',price:'₹2,862/g · ₹28,623/10g'},
+  {year:'2020',title:'COVID-19 Pandemic',desc:'Gold hits ₹48,651/10g (₹4,865/g) — then-record high driven by global uncertainty and RBI rate cuts.',price:'₹4,865/g · ₹48,651/10g'},
+  {year:'2024',title:'Modern Bull Market',desc:'Central bank buying, geopolitical tensions, and weak dollar push gold to new highs.',price:'₹7,200/g · ₹72,000/10g'},
+  {year:'2025',title:'Current All-time High',desc:'Gold surpasses ₹93,450/10g (₹9,345/g). RBI holds 800+ tonnes. VADER sentiment: 0.82 bullish.',price:'₹9,345/g · ₹93,450/10g'},
+];
+
+const corrLabels = ['GLD','SPX','USO','SLV','EURUSD'];
+const corrMatrix = [
+  [1.00,0.05,0.27,0.87,0.43],[0.05,1.00,0.54,-0.02,0.21],
+  [0.27,0.54,1.00,0.29,0.33],[0.87,-0.02,0.29,1.00,0.41],[0.43,0.21,0.33,0.41,1.00],
+];
+const featureLabels = ['SLV (Silver)','EUR/USD','USO (Oil)','SPX (S&P)','Sentiment'];
+const featureImportance = [0.42,0.23,0.17,0.11,0.07];
+
+const GOLD_COLOR = '#1E8A4A';
+const INK  = '#0D1F17';
+const GRID = 'rgba(0,0,0,0.04)';
+const TICK = '#4A7060';
+
+const chartBase = {
+  plugins:{legend:{display:false}},
+  scales:{
+    x:{grid:{color:GRID},ticks:{color:TICK,font:{family:'JetBrains Mono',size:9}}},
+    y:{grid:{color:GRID},ticks:{color:TICK,font:{family:'JetBrains Mono',size:9}}}
+  },
+  responsive:true, maintainAspectRatio:true
+};
+
+let mainChartInst = null;
+
+function updateChart(mode, ev) {
+  if(ev) { document.querySelectorAll('.btn-period').forEach(b=>b.classList.remove('active')); ev.target.classList.add('active'); }
+  if(mainChartInst) mainChartInst.destroy();
+  const map = {gld:gldData,spx:spxData,slv:slvData,uso:usoData};
+  const d = map[mode]||gldData;
+  const ctx = document.getElementById('mainChart').getContext('2d');
+  const g = ctx.createLinearGradient(0,0,0,260);
+  g.addColorStop(0,'rgba(30,138,74,0.15)'); g.addColorStop(1,'rgba(30,138,74,0)');
+  mainChartInst = new Chart(ctx,{
+    type:'line',
+    data:{labels:gldDates,datasets:[{data:d,borderColor:GOLD_COLOR,backgroundColor:g,borderWidth:2,pointRadius:3,pointBackgroundColor:GOLD_COLOR,pointBorderColor:'#fff',pointBorderWidth:1.5,fill:true,tension:0.4}]},
+    options:chartBase
+  });
+}
+
+function buildCharts() {
+  updateChart('gld',null);
+
+  const ic = document.getElementById('indiaChart').getContext('2d');
+  const ig = ic.createLinearGradient(0,0,0,240);
+  ig.addColorStop(0,'rgba(30,138,74,0.10)'); ig.addColorStop(1,'rgba(30,138,74,0)');
+  new Chart(ic,{
+    type:'line',
+    data:{labels:indiaData.map(d=>d.year),datasets:[{data:indiaData.map(d=>d.price),borderColor:INK,backgroundColor:ig,borderWidth:2,pointRadius:2.5,pointBackgroundColor:INK,fill:true,tension:0.3}]},
+    options:{...chartBase,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`₹${c.raw.toLocaleString('en-IN')}/10g  ·  ₹${(c.raw/10).toLocaleString('en-IN',{maximumFractionDigits:0})}/g`}}},
+      scales:{x:{grid:{color:GRID},ticks:{color:TICK,font:{family:'JetBrains Mono',size:9}}},y:{grid:{color:GRID},ticks:{color:TICK,font:{family:'JetBrains Mono',size:9},callback:v=>'₹'+(v>=1000?(v/1000).toFixed(0)+'K':v)}}}}
+  });
+
+  new Chart(document.getElementById('sentimentPie').getContext('2d'),{
+    type:'doughnut',
+    data:{labels:['Positive','Neutral','Negative'],datasets:[{data:[58,24,18],backgroundColor:['#2A7A4F','#D2CEC8','#C23B30'],borderWidth:0,borderRadius:3}]},
+    options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{display:false}},cutout:'68%'}
+  });
+
+  new Chart(document.getElementById('sentimentChart').getContext('2d'),{
+    type:'line',
+    data:{labels:sentimentDates,datasets:[
+      {label:'Gold Price (INR ÷1000)',data:goldPriceSentiment.map(v=>v/1000),borderColor:INK,borderWidth:2,pointRadius:3,pointBackgroundColor:INK,yAxisID:'y',tension:0.4},
+      {label:'Sentiment ×100',data:sentimentScores.map(v=>v*100),borderColor:GOLD_COLOR,borderWidth:2,borderDash:[5,4],pointRadius:3,pointBackgroundColor:GOLD_COLOR,yAxisID:'y1',tension:0.4}
+    ]},
+    options:{responsive:true,maintainAspectRatio:true,
+      plugins:{legend:{display:true,labels:{color:INK,font:{family:'JetBrains Mono',size:9},padding:14,boxWidth:14}}},
+      scales:{
+        x:{grid:{color:GRID},ticks:{color:TICK,font:{family:'JetBrains Mono',size:9}}},
+        y:{grid:{color:GRID},ticks:{color:INK,font:{family:'JetBrains Mono',size:9},callback:v=>'₹'+v+'K'},position:'left'},
+        y1:{ticks:{color:GOLD_COLOR,font:{family:'JetBrains Mono',size:9},callback:v=>v.toFixed(0)+'%'},position:'right',grid:{drawOnChartArea:false}}
+      }}
+  });
+
+  new Chart(document.getElementById('featureChart').getContext('2d'),{
+    type:'bar',
+    data:{labels:featureLabels,datasets:[{data:featureImportance,backgroundColor:[GOLD_COLOR,'#4A7060','#8AADA0','#C8DDD3','#1E8A4A44'],borderRadius:4,borderWidth:0}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:true,plugins:{legend:{display:false}},
+      scales:{
+        x:{grid:{color:GRID},ticks:{color:TICK,font:{family:'JetBrains Mono',size:9},callback:v=>(v*100).toFixed(0)+'%'}},
+        y:{grid:{color:'none'},ticks:{color:INK,font:{family:'Plus Jakarta Sans',size:13}}}
+      }}
+  });
+}
+
+function buildHistoryTable() {
+  const tb = document.getElementById('historyTable');
+  const em = {independence:{label:'Independence',cls:'era-independence'},liberalisation:{label:'Liberalisation',cls:'era-liberalisation'},modern:{label:'Modern',cls:'era-modern'},crisis:{label:'Crisis',cls:'era-crisis'}};
+  indiaData.forEach(r=>{
+    const e=em[r.era]; const c=r.change;
+    const g = (r.price/10).toLocaleString('en-IN',{maximumFractionDigits:2});
+    tb.innerHTML+=`<tr>
+      <td>${r.year}</td>
+      <td class="gold-val">₹${r.price.toLocaleString('en-IN')}</td>
+      <td class="gram-val">₹${g}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink-light);">$${r.usd}</td>
+      <td class="${c===null?'':c>=0?'pos':'neg'}">${c===null?'—':(c>=0?'▲':'▼')+' '+Math.abs(c).toFixed(1)+'%'}</td>
+      <td><span class="era-badge ${e.cls}">${e.label}</span></td>
+      <td style="font-size:12px;color:var(--ink-light);">${r.event}</td>
+    </tr>`;
+  });
+}
+
+function buildModelCards() {
+  const g=document.getElementById('modelGrid');
+  models.forEach(m=>{g.innerHTML+=`<div class="model-card"><div class="model-name">${m.name}</div><div class="model-accuracy">${m.accuracy}%</div><div class="accuracy-bar"><div class="accuracy-fill" style="width:${m.accuracy}%"></div></div><div style="font-family:'JetBrains Mono',monospace;font-size:7.5px;letter-spacing:1px;color:var(--ink-xlight);text-transform:uppercase;margin-bottom:10px;">${m.type}</div><div class="metric-row"><span class="metric-key">Precision</span><span class="metric-val">${m.precision}%</span></div><div class="metric-row"><span class="metric-key">Recall</span><span class="metric-val">${m.recall}%</span></div><div class="metric-row"><span class="metric-key">F1 Score</span><span class="metric-val">${m.f1}%</span></div></div>`;});
+}
+
+function buildHeatmap() {
+  const c=document.getElementById('heatmap');
+  let h='<div style="display:grid;grid-template-columns:54px repeat(5,1fr);gap:3px;">';
+  h+='<div></div>';
+  corrLabels.forEach(l=>{h+=`<div style="text-align:center;font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:1px;color:var(--ink-xlight);padding:5px 0;text-transform:uppercase;">${l}</div>`;});
+  corrMatrix.forEach((row,i)=>{
+    h+=`<div style="display:flex;align-items:center;font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:1px;color:var(--ink-xlight);text-transform:uppercase;padding-right:6px;">${corrLabels[i]}</div>`;
+    row.forEach(v=>{
+      const a=Math.abs(v);
+      const bg=v>=0?`rgba(30,138,74,${v===1?0.85:a*0.65})`:`rgba(194,59,48,${a*0.65})`;
+      const txt=a>0.5?'#fff':INK;
+      h+=`<div class="hm-cell" style="background:${bg};color:${txt};">${v.toFixed(2)}</div>`;
+    });
+  });
+  h+='</div>'; c.innerHTML=h;
+}
+
+function buildNewsFeed() {
+  const f=document.getElementById('newsFeed');
+  newsItems.forEach(n=>{
+    const cls=n.sentiment==='pos'?'pos-news':n.sentiment==='neg'?'neg-news':'';
+    const d=n.sentiment==='pos'?'↑':n.sentiment==='neg'?'↓':'→';
+    f.innerHTML+=`<div class="news-item ${cls}"><div class="news-date">${n.date} · VADER ${n.score>0?'+':''}${n.score.toFixed(2)}</div>${d} ${n.text}</div>`;
+  });
+}
+
+function buildTimeline() {
+  const t=document.getElementById('timelineContent');
+  timelineItems.forEach(i=>{t.innerHTML+=`<div class="timeline-item"><div class="tl-year">${i.year}</div><div class="tl-title">${i.title}</div><div class="tl-desc">${i.desc}</div><span class="tl-price">${i.price}</span></div>`;});
+}
+
+function showSection(id,btn) {
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.mobile-nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(btn) btn.classList.add('active');
+  // Sync desktop nav active state
+  const tabs = document.querySelectorAll('.nav-tab');
+  const sectionOrder = ['overview','predict','history','sentiment','models','timeline'];
+  const idx = sectionOrder.indexOf(id);
+  if(idx >= 0 && tabs[idx]) tabs[idx].classList.add('active');
+  // Sync mobile nav
+  const mobileTabs = document.querySelectorAll('.mobile-nav-tab');
+  if(mobileTabs[idx]) mobileTabs[idx].classList.add('active');
+  if(id==='predict') initPredictSection();
+}
+
+// ═══════════════════════════════════════════
+// PREDICT SECTION LOGIC
+// ═══════════════════════════════════════════
+const API_BASE = 'http://localhost:5000';
+let _predChartInst = null, _predSentGauge = null, _predSentPie = null, _predModelChart = null;
+let _predictInitialized = false;
+
+// Set today's date as default
+(function() {
+  const d = new Date();
+  const iso = d.toISOString().split('T')[0];
+  window.addEventListener('DOMContentLoaded', () => {
+    const el = document.getElementById('predictDateInput');
+    if(el) el.value = iso;
+    checkApiStatus();
+  });
+})();
+
+async function checkApiStatus() {
+  const dot = document.getElementById('apiDot');
+  const txt = document.getElementById('apiStatusText');
+  if(!dot || !txt) return;
+  try {
+    const r = await fetch(API_BASE+'/api/health', {signal: AbortSignal.timeout(2000)});
+    if(r.ok) {
+      dot.className = 'api-dot online';
+      txt.textContent = 'Backend online · localhost:5000';
+    } else { throw new Error(); }
+  } catch {
+    dot.className = 'api-dot demo';
+    txt.textContent = 'Demo mode · run app.py to connect';
+  }
+}
+
+async function runPredict() {
+  const dateVal = document.getElementById('predictDateInput').value;
+  if(!dateVal) { alert('Please select a date first.'); return; }
+
+  const out = document.getElementById('predictOutput');
+  const btn = document.querySelector('.predict-btn-submit');
+  out.innerHTML = '<div class="predict-loading">⟳ Fetching prediction…</div>';
+  btn.textContent = 'Loading…'; btn.classList.add('loading');
+
+  try {
+    const res = await fetch(API_BASE+'/api/predict', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({date: dateVal}),
+      signal: AbortSignal.timeout(8000)
+    });
+    const data = await res.json();
+    btn.textContent = 'Submit'; btn.classList.remove('loading');
+    renderPredictResult(data, dateVal);
+  } catch {
+    // Fallback: Demo mode prediction using embedded data
+    btn.textContent = 'Submit'; btn.classList.remove('loading');
+    const demo = demoPredict(dateVal);
+    renderPredictResult(demo, dateVal);
+  }
+}
+
+function demoPredict(dateStr) {
+  const d = new Date(dateStr);
+  const year = d.getFullYear();
+  let closest = indiaData[0];
+  let minDiff = Math.abs(year - indiaData[0].year);
+  indiaData.forEach(r => {
+    const diff = Math.abs(year - r.year);
+    if(diff < minDiff) { minDiff = diff; closest = r; }
+  });
+  const todayInr = closest.price;
+  const sentiment = 0.296;
+  const changePct = (Math.random() - 0.45) * 1.2 + sentiment * 0.8;
+  const predInr = Math.round(todayInr * (1 + changePct / 100));
+  const todayGld = Math.round(closest.usd * 31.1035 / 10 * 10) / 10;
+  const predGld  = Math.round(todayGld * (1 + changePct / 100) * 10) / 10;
+
+  const t = new Date(dateStr);
+  if(t.getDay() === 0) t.setDate(t.getDate()-2);
+  if(t.getDay() === 6) t.setDate(t.getDate()-1);
+  const usedDate = t.toISOString().split('T')[0];
+
+  return {
+    input_date: dateStr,
+    used_date: usedDate,
+    today_gld_usd: todayGld,
+    predicted_gld_usd: predGld,
+    today_inr_10g: todayInr,
+    predicted_inr_10g: predInr,
+    change_pct: Math.round(changePct * 1000)/1000,
+    direction: changePct >= 0 ? 'Bullish ↑' : 'Bearish ↓',
+    sentiment_score: sentiment,
+    sentiment_label: 'Positive',
+    data_source: 'Demo mode (embedded data)'
+  };
+}
+
+function renderPredictResult(data, dateStr) {
+  const isUp  = data.predicted_gld_usd >= data.today_gld_usd;
+  const arrow = isUp ? '▲' : '▼';
+  const dir   = data.direction || (isUp ? 'Bullish ↑' : 'Bearish ↓');
+  const chg   = (data.change_pct >= 0 ? '+' : '') + data.change_pct + '%';
+  const out   = document.getElementById('predictOutput');
+  const inrToday = data.today_inr_10g  ? '₹'+ Number(data.today_inr_10g).toLocaleString('en-IN') : '—';
+  const inrPred  = data.predicted_inr_10g ? '₹'+ Number(data.predicted_inr_10g).toLocaleString('en-IN') : '—';
+
+  out.innerHTML = `
+    <div class="predict-result-row">
+      <span class="predict-result-icon">📅</span>
+      <div>
+        <div class="predict-result-key">Input Date</div>
+        <div class="predict-result-val">${data.input_date}</div>
+      </div>
+    </div>
+    <div class="predict-result-row">
+      <span class="predict-result-icon">📌</span>
+      <div>
+        <div class="predict-result-key">Used Date (Nearest Trading Day)</div>
+        <div class="predict-result-val" style="color:rgba(255,255,255,0.5);font-size:13px;">${data.used_date}</div>
+      </div>
+    </div>
+    <hr class="predict-divider">
+    <div class="predict-result-row">
+      <span class="predict-result-icon">💰</span>
+      <div>
+        <div class="predict-result-key">Today Price</div>
+        <div class="predict-result-val">$${data.today_gld_usd} GLD &nbsp;·&nbsp; ${inrToday} /10g</div>
+      </div>
+    </div>
+    <div class="predict-result-row">
+      <span class="predict-result-icon">📊</span>
+      <div>
+        <div class="predict-result-key">Predicted Tomorrow</div>
+        <div class="predict-result-val ${isUp?'up':'down'}">$${data.predicted_gld_usd} &nbsp;<small>${chg}</small> &nbsp;·&nbsp; ${inrPred}</div>
+      </div>
+    </div>
+    <hr class="predict-divider">
+    <div class="predict-result-row">
+      <span class="predict-result-icon">🧠</span>
+      <div>
+        <div class="predict-result-key">Sentiment Score (VADER)</div>
+        <div class="predict-result-val ${data.sentiment_score >= 0 ? 'up':'down'}">${data.sentiment_score} — ${data.sentiment_label}</div>
+      </div>
+    </div>
+    <div class="predict-result-row">
+      <span class="predict-result-icon">${isUp?'🟢':'🔴'}</span>
+      <div>
+        <div class="predict-result-key">Signal</div>
+        <div class="predict-result-val ${isUp?'up':'down'}">${dir}</div>
+      </div>
+    </div>
+    <div style="font-family:'JetBrains Mono',monospace;font-size:7.5px;color:rgba(255,255,255,0.18);margin-top:10px;letter-spacing:0.3px;">
+      Source: ${data.data_source || 'embedded'}
+    </div>
+  `;
+
+  const sg = document.getElementById('sentScore');
+  if(sg) sg.textContent = data.sentiment_score;
+}
+
+function clearPredict() {
+  document.getElementById('predictDateInput').value = '';
+  const out = document.getElementById('predictOutput');
+  out.innerHTML = '<div class="predict-placeholder">Enter a date and press Submit to see the prediction.</div>';
+}
+
+function flagResult() {
+  alert('Result flagged. Thank you for your feedback!');
+}
+
+function initPredictSection() {
+  if(_predictInitialized) return;
+  _predictInitialized = true;
+
+  // History chart for predict section
+  (function() {
+    const ctx = document.getElementById('predHistoryChart');
+    if(!ctx) return;
+    const ig = ctx.getContext('2d').createLinearGradient(0,0,0,200);
+    ig.addColorStop(0,'rgba(30,138,74,0.15)'); ig.addColorStop(1,'rgba(30,138,74,0)');
+    _predChartInst = new Chart(ctx.getContext('2d'),{
+      type:'line',
+      data:{labels:indiaData.map(d=>d.year),datasets:[{
+        data:indiaData.map(d=>d.price),
+        borderColor:'#1E8A4A',backgroundColor:ig,
+        borderWidth:2.5,pointRadius:3,pointBackgroundColor:'#1E8A4A',
+        fill:true,tension:0.35
+      }]},
+      options:{
+        responsive:true,maintainAspectRatio:true,
+        plugins:{legend:{display:false},tooltip:{callbacks:{
+          label:c=>`₹${Number(c.raw).toLocaleString('en-IN')}/10g  ·  ₹${(c.raw/10).toLocaleString('en-IN',{maximumFractionDigits:0})}/g`
+        }}},
+        scales:{
+          x:{grid:{color:GRID},ticks:{color:TICK,font:{family:'JetBrains Mono',size:9}}},
+          y:{grid:{color:GRID},ticks:{color:TICK,font:{family:'JetBrains Mono',size:9},callback:v=>'₹'+(v>=1000?(v/1000).toFixed(0)+'K':v)}}
+        }
+      }
+    });
+  })();
+
+  // Sentiment pie for predict section
+  (function(){
+    const ctx = document.getElementById('predSentPie');
+    if(!ctx) return;
+    _predSentPie = new Chart(ctx.getContext('2d'),{
+      type:'doughnut',
+      data:{labels:['Positive','Neutral','Negative'],datasets:[{data:[58,24,18],backgroundColor:['#2A7A4F','#D2CEC8','#C23B30'],borderWidth:0,borderRadius:3}]},
+      options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{display:false}},cutout:'68%'}
+    });
+  })();
+
+  // Model chart (actual vs predicted simulation)
+  (function(){
+    const ctx = document.getElementById('predModelChart');
+    if(!ctx) return;
+    const actual = []; const predicted = [];
+    let price = 130;
+    for(let i=0;i<40;i++){
+      actual.push(Math.round(price*10)/10);
+      price += (Math.random()-0.44)*2.5;
+      predicted.push(Math.round(price*10)/10 + (Math.random()-0.5)*1.5);
+    }
+    new Chart(ctx.getContext('2d'),{
+      type:'line',
+      data:{labels:Array.from({length:40},(_,i)=>`T${i+1}`),datasets:[
+        {label:'Actual GLD',data:actual,borderColor:'#155E33',borderWidth:2,pointRadius:0,tension:0.4},
+        {label:'Predicted',data:predicted,borderColor:GOLD_COLOR,borderWidth:2,borderDash:[5,4],pointRadius:0,tension:0.4}
+      ]},
+      options:{
+        responsive:true,maintainAspectRatio:true,
+        plugins:{legend:{display:true,labels:{color:INK,font:{family:'JetBrains Mono',size:9},padding:12,boxWidth:20}}},
+        scales:{
+          x:{grid:{color:GRID},ticks:{color:TICK,font:{family:'JetBrains Mono',size:8}}},
+          y:{grid:{color:GRID},ticks:{color:TICK,font:{family:'JetBrains Mono',size:9}}}
+        }
+      }
+    });
+  })();
+}
+
+function switchPredChart(mode, ev) {
+  if(ev) { document.querySelectorAll('#predict .btn-period').forEach(b=>b.classList.remove('active')); ev.target.classList.add('active'); }
+  if(!_predChartInst) return;
+  if(mode==='india'){
+    _predChartInst.data.datasets[0].data = indiaData.map(d=>d.price);
+    _predChartInst.data.datasets[0].borderColor = '#1E8A4A';
+    _predChartInst.options.scales.y.ticks.callback = v=>'₹'+(v>=1000?(v/1000).toFixed(0)+'K':v);
+  } else {
+    _predChartInst.data.datasets[0].data = indiaData.map(d=>d.usd);
+    _predChartInst.data.datasets[0].borderColor = GOLD_COLOR;
+    _predChartInst.options.scales.y.ticks.callback = v=>'$'+v;
+  }
+  _predChartInst.update();
+}
+
+function toggleMobileMenu() {
+  const menu = document.getElementById('mobileMenu');
+  const btn  = document.getElementById('hamburgerBtn');
+  menu.classList.toggle('open');
+  btn.classList.toggle('open');
+  document.body.style.overflow = menu.classList.contains('open') ? 'hidden' : '';
+}
+function closeMobileMenu() {
+  document.getElementById('mobileMenu').classList.remove('open');
+  document.getElementById('hamburgerBtn').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function closeMobileMenuOnBackdrop(e) {
+  if(e.target === document.getElementById('mobileMenu')) closeMobileMenu();
+}
+
+window.addEventListener('DOMContentLoaded',()=>{
+  buildHistoryTable(); buildModelCards(); buildNewsFeed(); buildTimeline();
+  setTimeout(()=>{ buildCharts(); buildHeatmap(); },80);
+});
+</script>
+</body>
+</html>
