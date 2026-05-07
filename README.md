@@ -1,4 +1,4 @@
-🪙 Gold Price Prediction & Sentiment Analysis
+Gold Price Prediction & Sentiment Analysis
 
 An advanced Machine Learning and NLP-based web application designed to analyze historical gold prices, financial news sentiment, and predict future gold price trends using real-time sentiment scoring and ML algorithms.
 
