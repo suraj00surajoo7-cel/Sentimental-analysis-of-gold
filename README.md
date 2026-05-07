@@ -1,8 +1,8 @@
-Gold Price Prediction & Sentiment Analysis
+# Gold Price Prediction & Sentiment Analysis
 
 An advanced Machine Learning and NLP-based web application designed to analyze historical gold prices, financial news sentiment, and predict future gold price trends using real-time sentiment scoring and ML algorithms.
 
-This project combines:
+# This project combines:
 
 📈 Gold price forecasting
 🧠 Sentiment analysis using VADER & FinBERT
@@ -11,26 +11,26 @@ This project combines:
 🌐 Flask-based web application
 🇮🇳 Indian gold market historical analysis (1947–Present)
 
-🚀 Features
+# 🚀 Features
 📊 Dashboard Analytics
 Interactive gold price visualization
 Historical Indian gold price trends
 Real-time sentiment score display
 Market movement analysis
 
-🔮 Gold Price Prediction
+# 🔮 Gold Price Prediction
 Predict future gold prices using ML models
 Date-wise prediction system
 Actual vs predicted comparison charts
 Trend forecasting
 
-🧠 Sentiment Analysis Engine
+# 🧠 Sentiment Analysis Engine
 Financial news sentiment classification
 VADER sentiment scoring
 FinBERT transformer-based NLP analysis
 Positive / Neutral / Negative sentiment distribution
 
-🤖 Machine Learning Models
+# 🤖 Machine Learning Models
 Implemented multiple ML algorithms:
 Random Forest Regressor
 Logistic Regression
@@ -39,13 +39,13 @@ Support Vector Machine (SVM)
 LSTM Neural Network
 FinBERT NLP Transformer
 
-📅 Historical Gold Analysis
+# 📅 Historical Gold Analysis
 Indian gold price history from 1947–2025
 Economic event correlation
 RBI gold reserve impact
 Global financial crisis effects
 
-🧠 Machine Learning Workflow
+# 🧠 Machine Learning Workflow
 Data Collection
 Data Cleaning & Preprocessing
 Feature Engineering
@@ -54,12 +54,12 @@ Model Training
 Evaluation & Accuracy Testing
 Prediction Deployment
 
-📂 Dataset Information
+# 📂 Dataset Information
 The project uses:
 Historical Gold Prices
 GLD ETF Dataset
 
-📊 Model Performance
+# 📊 Model Performance
 Model	Accuracy
 Random Forest	94.3%
 FinBERT	93.5%
@@ -68,7 +68,7 @@ SVM	89.1%
 Logistic Regression	86.7%
 Naive Bayes	82.4%
 
-📸 Dashboard Preview
+# 📸 Dashboard Preview
 Main Modules
 Overview Dashboard
 Gold Price Prediction
@@ -77,7 +77,7 @@ Sentiment Engine
 ML Model Performance
 India Gold Timeline
 
-⚙️ Installation
+# ⚙️ Installation 
 # Clone repository
 git clone https://github.com/your-username/gold-price-prediction-sentiment-analysis.git
 
@@ -90,21 +90,21 @@ pip install -r requirements.txt
 # Run Flask server
 python app.py
 
-▶️ Usage
+# ▶️ Usage
 Open the dashboard
 Enter a date for prediction
 Analyze sentiment score
 View predicted gold price
 Explore historical market trends
 
-📌 Project Objectives
+# 📌 Project Objectives
 Predict future gold prices accurately
 Analyze market sentiment from financial news
 Study relationship between sentiment and gold market
 Build interactive analytical dashboard
 Improve forecasting using Machine Learning
 
-📈 Future Enhancements
+# 📈 Future Enhancements
 Live API integration
 Real-time news scraping
 Deep learning forecasting
@@ -112,7 +112,7 @@ Mobile responsive application
 User authentication
 Cloud deployment
 
-🎯 Learning Outcomes
+# 🎯 Learning Outcomes
 Through this project:
 Applied Machine Learning algorithms
 Learned NLP and sentiment analysis
